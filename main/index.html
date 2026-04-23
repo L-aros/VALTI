@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>VALTI</title>
+  <link rel="icon" type="image/png" href="./assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <button type="button" class="theme-toggle" id="theme-toggle" aria-label="切换到深色模式">深色</button>
+
+  <div class="page active" id="page-home">
+    <div>
+      <div class="home-head">
+        <div class="home-kicker">15题人格测试 · MBTI恶搞版</div>
+        <div class="home-pixel-title">VALTI</div>
+        <div class="home-subtitle">测出你是哪种一开麦就暴露人格的无畏契约特工<br>离谱一点，但像排位队友对你的第一印象</div>
+      </div>
+
+      <div class="animals-stage">
+        <div class="animals-row row-1" id="home-row-1"></div>
+        <div class="animals-row row-2" id="home-row-2"></div>
+        <div class="animals-row row-3" id="home-row-3"></div>
+      </div>
+    </div>
+
+    <div class="home-bottom">
+      <div class="home-copy">
+        <p>15 道排位灵魂拷打，测你更像控麦指挥型<br>还是残局上头型、补位嘴硬型、气氛托底型</p>
+        <p>不一定专业，但大概率能把你平时打瓦那点味儿说出来</p>
+      </div>
+      <button type="button" class="btn-start is-hidden" id="btn-start">
+        <span class="btn-start-icon"></span>
+        开始测试
+      </button>
+      <div class="home-notice-entry" id="home-notice-entry">
+        <p class="home-notice-text">未同意公告前不可开始测试</p>
+        <button type="button" class="btn-notice-link" id="btn-notice-reopen">重新查看公告</button>
+      </div>
+      <p class="home-footer">适合排位坐牢的人类与嘴上说随便但心里早有答案的人<br>结果仅供娱乐，不代表你的真实枪法与段位</p>
+    </div>
+  </div>
+
+  <div class="page" id="page-quiz">
+    <div class="quiz-header">
+      <button type="button" class="btn-back" id="btn-back">←</button>
+      <span class="quiz-counter" id="quiz-counter">1 / 15</span>
+      <div style="width:36px"></div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+
+    <div class="quiz-body">
+      <div class="quiz-cat-wrap">
+        <div class="quiz-cat-icon" id="quiz-agent-icon"></div>
+        <div class="quiz-cat-bubble" id="quiz-agent-bubble">认真选，别装自己很会打默认</div>
+      </div>
+
+      <div class="question-text" id="question-text"></div>
+      <div class="options" id="options-wrap"></div>
+    </div>
+
+    <div class="quiz-question-id" id="quiz-question-id"></div>
+    <button type="button" class="btn-next" id="btn-next">继续 →</button>
+  </div>
+
+  <div class="page" id="page-result">
+    <div class="result-header">
+      <span class="result-date" id="result-date"></span>
+      <span class="result-header-title">VALTI结果</span>
+      <button type="button" class="result-theme-toggle" id="result-theme-toggle" aria-label="切换到深色模式">深色</button>
+    </div>
+
+    <div class="result-hero">
+      <div class="result-cat-frame" id="result-agent-frame"></div>
+      <div class="result-label">你的特工人格是</div>
+      <div class="result-type" id="result-type">—</div>
+      <div class="result-subname" id="result-subname">—</div>
+    </div>
+
+    <div class="result-quote">
+      <p id="result-quote-text">—</p>
+    </div>
+
+    <div class="traits">
+      <div class="traits-title">排位标签</div>
+      <div class="trait-list" id="trait-list"></div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="result-desc" id="result-desc"></div>
+
+    <div class="result-actions">
+      <button type="button" class="btn-retry" id="btn-retry">再测一次</button>
+    </div>
+
+    <p class="result-footer">
+      适合嘴硬的人类和早有预感的特工<br>
+      当前为预览版，结果仅供娱乐<br>
+      项目开源地址：<a href="https://github.com/L-aros/VALTI" target="_blank" rel="noopener noreferrer">L-aros/VALTI</a>
+    </p>
+  </div>
+
+  <div class="notice-overlay" id="notice-overlay">
+    <div class="notice-dialog" role="dialog" aria-modal="true" aria-labelledby="notice-title">
+      <p class="notice-kicker">首次进入前请先看</p>
+      <h2 class="notice-title" id="notice-title">VALTI 公告</h2>
+      <div class="notice-body">
+        <div class="notice-block">
+          <p>本网站不会收集你的信息，也没有分享功能<br>浏览器只会在本地保存明暗模式偏好和已见题目 MD5，用于尽量减少重复题；这些记录不会上传，清除站点数据后会重置</p>
+        </div>
+        <div class="notice-block">
+          <p>题库共 500 题，每次固定抽 15 题；答题页左下角会显示当前题目的 MD5，仅供定位和排查</p>
+        </div>
+        <div class="notice-block notice-links">
+          <p>项目致谢：<a href="https://github.com/diggtoli-stack/DogTi" target="_blank" rel="noopener noreferrer">diggtoli-stack/DogTi</a></p>
+          <p>开源地址：<a href="https://github.com/L-aros/VALTI" target="_blank" rel="noopener noreferrer">L-aros/VALTI</a></p>
+        </div>
+      </div>
+      <div class="notice-actions">
+        <button type="button" class="btn-notice-secondary" id="btn-notice-decline">不同意</button>
+        <button type="button" class="btn-notice-primary" id="btn-notice-agree">同意</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
