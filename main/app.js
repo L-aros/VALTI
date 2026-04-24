@@ -13,6 +13,7 @@ let lastQuizArtKey = null;
 
 const dom = {
   themeToggle: document.getElementById("theme-toggle"),
+  quizThemeToggle: document.getElementById("quiz-theme-toggle"),
   resultThemeToggle: document.getElementById("result-theme-toggle"),
   startBtn: document.getElementById("btn-start"),
   noticeEntry: document.getElementById("home-notice-entry"),
@@ -116,7 +117,7 @@ const termGlossary = [
 function updateThemeToggle(theme) {
   const nextLabel = theme === "dark" ? "浅色" : "深色";
   const ariaLabel = theme === "dark" ? "切换到浅色模式" : "切换到深色模式";
-  [dom.themeToggle, dom.resultThemeToggle].filter(Boolean).forEach(button => {
+  [dom.themeToggle, dom.quizThemeToggle, dom.resultThemeToggle].filter(Boolean).forEach(button => {
     button.textContent = nextLabel;
     button.setAttribute("aria-label", ariaLabel);
   });
@@ -573,6 +574,7 @@ function retryQuiz() {
 
 function bindEvents() {
   dom.themeToggle.addEventListener("click", toggleTheme);
+  dom.quizThemeToggle?.addEventListener("click", toggleTheme);
   dom.resultThemeToggle?.addEventListener("click", toggleTheme);
   dom.startBtn.addEventListener("click", startQuiz);
   dom.noticeReopen.addEventListener("click", openNoticeDialog);

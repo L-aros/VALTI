@@ -224,16 +224,16 @@ body {
 
 #page-quiz {
   min-height: 100vh;
-  padding-top: calc(env(safe-area-inset-top, 0px) + 48px);
+  padding-top: 0;
   padding-bottom: 64px;
   position: relative;
 }
 
 .quiz-header {
-  padding: 14px 20px 0;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(66px, 1fr) auto minmax(66px, 1fr);
   align-items: center;
-  justify-content: space-between;
+  padding: max(14px, env(safe-area-inset-top, 0px) + 10px) 20px 0;
 }
 
 .btn-back {
@@ -251,9 +251,34 @@ body {
 }
 
 .quiz-counter {
+  justify-self: center;
   font-size: 13px;
   color: var(--gray-3);
   font-weight: 500;
+}
+
+.quiz-theme-toggle {
+  justify-self: end;
+  height: 36px;
+  min-width: 58px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1.5px solid var(--gray-2);
+  background: var(--page-shell);
+  color: var(--black);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(17, 17, 17, 0.08);
+}
+
+.quiz-theme-toggle:active {
+  opacity: 0.75;
+}
+
+body[data-active-page="page-quiz"] .theme-toggle {
+  display: none;
 }
 
 .progress-wrap {
@@ -822,6 +847,7 @@ svg { display: block; }
 
 @media (max-width: 370px) {
   .theme-toggle,
+  .quiz-theme-toggle,
   .result-theme-toggle {
     min-width: 58px;
     padding: 0 12px;
