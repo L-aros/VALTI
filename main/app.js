@@ -26,8 +26,12 @@ const dom = {
   optionsWrap: document.getElementById("options-wrap"),
   quizCounter: document.getElementById("quiz-counter"),
   progressFill: document.getElementById("progress-fill"),
+  quizMessage: document.getElementById("quiz-message"),
   quizQuestionId: document.getElementById("quiz-question-id"),
   questionText: document.getElementById("question-text"),
+  termHelp: document.getElementById("term-help"),
+  termHelpToggle: document.getElementById("term-help-toggle"),
+  termHelpPanel: document.getElementById("term-help-panel"),
   quizAgentBubble: document.getElementById("quiz-agent-bubble"),
   quizAgentIcon: document.getElementById("quiz-agent-icon"),
   resultType: document.getElementById("result-type"),
@@ -90,6 +94,24 @@ const homeRows = {
 
 const quizArtPool = ["brimstone", "phoenix", "yoru", "skye", "gekko", "killjoy", "jett", "sage", "raze", "breach", "viper", "cypher", "omen", "astra", "sova", "chamber", "harbor", "reyna", "kayo", "neon", "fade", "deadlock", "iso", "clove", "vyse", "tejo", "waylay"];
 const assetArtKeys = new Set(quizArtPool);
+
+const termGlossary = [
+  { terms: ["default", "默认"], label: "默认", desc: "开局先分散控图、试探信息，不急着直接进点。" },
+  { terms: ["peek", "拉枪"], label: "peek / 拉枪", desc: "主动探出去看人或对枪。" },
+  { terms: ["timing"], label: "timing", desc: "刚好遇到的时机差，早一秒晚一秒结果都可能不同。" },
+  { terms: ["补防"], label: "补防", desc: "队友守的点有压力时，过去帮忙防守。" },
+  { terms: ["转点"], label: "转点", desc: "放弃当前目标点，换到另一个点进攻或防守。" },
+  { terms: ["反包"], label: "反包", desc: "进攻方下包后，防守方重新组织回点拆包。" },
+  { terms: ["强起"], label: "强起", desc: "经济不好也硬买装备，赌这一回合能翻回来。" },
+  { terms: ["eco"], label: "eco", desc: "少买或不买，攒钱给后面的关键回合。" },
+  { terms: ["残局"], label: "残局", desc: "回合后半段人数变少，靠个人处理和选择收尾。" },
+  { terms: ["架枪"], label: "架枪", desc: "提前瞄住敌人可能出现的位置，等对方出来。" },
+  { terms: ["道具"], label: "道具", desc: "烟、闪、侦查、控制等技能或装备。" },
+  { terms: ["预瞄"], label: "预瞄", desc: "提前把准星放在敌人可能出现的位置。" },
+  { terms: ["控图", "地图控制"], label: "控图", desc: "通过站位和技能拿信息、压缩对手活动空间。" },
+  { terms: ["补位"], label: "补位", desc: "阵容或位置缺什么，就主动去补上。" },
+  { terms: ["起枪"], label: "起枪", desc: "这一回合买什么枪和护甲。" }
+];
 
 function updateThemeToggle(theme) {
   const nextLabel = theme === "dark" ? "浅色" : "深色";
@@ -259,6 +281,61 @@ function cleanQuoteText(text) {
   return typeof text === "string" ? text.replace(/[。．.]+$/u, "") : "";
 }
 
+function showQuizMessage(message) {
+  if (!dom.quizMessage) return;
+  dom.quizMessage.textContent = message;
+  dom.quizMessage.hidden = false;
+  window.clearTimeout(showQuizMessage.timer);
+  showQuizMessage.timer = window.setTimeout(() => {
+    dom.quizMessage.hidden = true;
+  }, 3200);
+}
+
+function hideQuizMessage() {
+  if (!dom.quizMessage) return;
+  window.clearTimeout(showQuizMessage.timer);
+  dom.quizMessage.hidden = true;
+}
+
+function getQuestionTextForTerms(question) {
+  return [
+    question?.text,
+    question?.hint,
+    ...(Array.isArray(question?.options) ? question.options.map(option => option.text) : [])
+  ].filter(Boolean).join(" ").toLowerCase();
+}
+
+function getMatchedTerms(question) {
+  const text = getQuestionTextForTerms(question);
+  return termGlossary.filter(item => item.terms.some(term => text.includes(term.toLowerCase())));
+}
+
+function renderTermHelp(question) {
+  if (!dom.termHelp || !dom.termHelpToggle || !dom.termHelpPanel) return;
+
+  const matches = getMatchedTerms(question);
+  if (!matches.length) {
+    dom.termHelp.hidden = true;
+    dom.termHelp.classList.remove("is-open");
+    dom.termHelpToggle.setAttribute("aria-expanded", "false");
+    dom.termHelpPanel.innerHTML = "";
+    return;
+  }
+
+  dom.termHelp.hidden = false;
+  dom.termHelp.classList.remove("is-open");
+  dom.termHelpToggle.setAttribute("aria-expanded", "false");
+  dom.termHelpPanel.innerHTML = matches.map(item => `
+    <p><strong>${item.label}</strong>：${item.desc}</p>
+  `).join("");
+}
+
+function toggleTermHelp() {
+  if (!dom.termHelp || dom.termHelp.hidden) return;
+  const isOpen = dom.termHelp.classList.toggle("is-open");
+  dom.termHelpToggle.setAttribute("aria-expanded", String(isOpen));
+}
+
 function initHomeNotice() {
   applyConsentState("pending");
   openNoticeDialog();
@@ -308,6 +385,7 @@ async function startQuiz() {
     return;
   }
 
+  hideQuizMessage();
   const originalText = dom.startBtn.innerHTML;
   dom.startBtn.disabled = true;
   dom.startBtn.innerHTML = '<span class="btn-start-icon"></span>加载中';
@@ -321,7 +399,7 @@ async function startQuiz() {
     const data = await response.json();
     if (!response.ok) {
       if (isRateLimited(response, data)) {
-        alert("请求太频繁了，请稍后再试。");
+        showQuizMessage("点太快啦，稍等一会儿再开始。");
         return;
       }
       throw new Error("题目加载失败");
@@ -341,7 +419,7 @@ async function startQuiz() {
     renderQuestion();
     showPage("page-quiz");
   } catch {
-    alert("题目加载失败，请稍后再试");
+    showQuizMessage("题目加载失败，等一下再试试。");
   } finally {
     dom.startBtn.disabled = false;
     dom.startBtn.innerHTML = originalText;
@@ -370,15 +448,16 @@ function renderQuestion() {
   const savedAnswer = quizAnswers[currentQ];
   selectedOpt = savedAnswer ? q.options.findIndex(option => option.key === savedAnswer.optionKey) : null;
   dom.quizCounter.textContent = `${currentQ + 1} / ${questions.length}`;
-  dom.progressFill.style.width = `${(currentQ / questions.length) * 100}%`;
+  dom.progressFill.style.width = `${((currentQ + 1) / questions.length) * 100}%`;
   dom.quizQuestionId.textContent = q.id || "";
   dom.questionText.textContent = q.text;
   dom.quizAgentBubble.textContent = q.hint;
   dom.quizAgentIcon.innerHTML = renderAgentArt(pickQuizArt(q.art), 40, { cropTopSquare: true });
+  renderTermHelp(q);
   dom.optionsWrap.innerHTML = q.options.map((opt, index) => `
     <button type="button" class="opt${index === selectedOpt ? " selected" : ""}" data-option-index="${index}">
       <span class="opt-key">${opt.key}</span>
-      <span>${opt.text}</span>
+      <span class="opt-text">${opt.text}</span>
     </button>
   `).join("");
   dom.nextBtn.classList.toggle("enabled", selectedOpt !== null);
@@ -433,7 +512,7 @@ async function nextQuestion() {
     const data = await response.json();
     if (!response.ok) {
       if (isRateLimited(response, data)) {
-        alert("请求太频繁了，请稍后再试。");
+        showQuizMessage("请求太频繁了，稍后再看结果。");
         dom.nextBtn.textContent = originalText;
         if (selectedOpt !== null) {
           dom.nextBtn.classList.add("enabled");
@@ -449,7 +528,7 @@ async function nextQuestion() {
 
     showResult(data.result);
   } catch {
-    alert("结果生成失败，请重新测试一次");
+    showQuizMessage("结果生成失败，可以重新测一次。");
     dom.nextBtn.textContent = originalText;
     if (selectedOpt !== null) {
       dom.nextBtn.classList.add("enabled");
@@ -499,6 +578,7 @@ function bindEvents() {
   dom.noticeReopen.addEventListener("click", openNoticeDialog);
   dom.noticeAgree.addEventListener("click", agreeNotice);
   dom.noticeDecline.addEventListener("click", declineNotice);
+  dom.termHelpToggle?.addEventListener("click", toggleTermHelp);
   dom.backBtn.addEventListener("click", goBack);
   dom.nextBtn.addEventListener("click", nextQuestion);
   dom.retryBtn.addEventListener("click", retryQuiz);

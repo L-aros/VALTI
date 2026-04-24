@@ -13,6 +13,7 @@
 </head>
 <body>
   <button type="button" class="theme-toggle" id="theme-toggle" aria-label="切换到深色模式">深色</button>
+  <div class="quiz-message" id="quiz-message" role="status" aria-live="polite" hidden></div>
 
   <div class="page active" id="page-home">
     <div>
@@ -39,7 +40,7 @@
         开始测试
       </button>
       <div class="home-notice-entry" id="home-notice-entry">
-        <p class="home-notice-text">未同意公告前不可开始测试</p>
+        <p class="home-notice-text">看完说明后就可以开始测试</p>
         <button type="button" class="btn-notice-link" id="btn-notice-reopen">重新查看公告</button>
       </div>
       <p class="home-footer">适合排位坐牢的人类与嘴上说随便但心里早有答案的人<br>结果仅供娱乐，不代表你的真实枪法与段位</p>
@@ -66,10 +67,14 @@
       </div>
 
       <div class="question-text" id="question-text"></div>
+      <div class="term-help" id="term-help" hidden>
+        <button type="button" class="term-help-toggle" id="term-help-toggle" aria-expanded="false">看不懂术语？</button>
+        <div class="term-help-panel" id="term-help-panel"></div>
+      </div>
       <div class="options" id="options-wrap"></div>
     </div>
 
-    <div class="quiz-question-id" id="quiz-question-id"></div>
+    <div class="quiz-question-id" id="quiz-question-id" hidden></div>
     <button type="button" class="btn-next" id="btn-next">继续 →</button>
   </div>
 
@@ -112,14 +117,14 @@
 
   <div class="notice-overlay" id="notice-overlay">
     <div class="notice-dialog" role="dialog" aria-modal="true" aria-labelledby="notice-title">
-      <p class="notice-kicker">首次进入前请先看</p>
-      <h2 class="notice-title" id="notice-title">VALTI 公告</h2>
+      <p class="notice-kicker">开始前请先看</p>
+      <h2 class="notice-title" id="notice-title">VALTI 小说明</h2>
       <div class="notice-body">
         <div class="notice-block">
-          <p>本网站不会收集你的信息，也没有分享功能<br>浏览器只会在本地保存明暗模式偏好和已见题目 MD5，用于尽量减少重复题；这些记录不会上传，清除站点数据后会重置</p>
+          <p>这是一个娱乐向《无畏契约》人格测试，结果只适合图一乐，不代表真实枪法、段位或性格结论。</p>
         </div>
         <div class="notice-block">
-          <p>题库共 500 题，每次固定抽 15 题；答题页左下角会显示当前题目的 MD5，仅供定位和排查</p>
+          <p>网站不会收集你的个人信息。浏览器只会在本地记住主题偏好和最近见过的题，用来减少重复；清除站点数据后会重置。</p>
         </div>
         <div class="notice-block notice-links">
           <p>项目致谢：<a href="https://github.com/diggtoli-stack/DogTi" target="_blank" rel="noopener noreferrer">diggtoli-stack/DogTi</a></p>
